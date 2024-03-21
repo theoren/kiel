@@ -14,7 +14,7 @@ from .client import Client
 
 
 log = logging.getLogger(__name__)
-
+# log.setLevel(logging.DEBUG) # uncomment for troubleshooting
 
 class BaseConsumer(Client):
     """
@@ -128,9 +128,11 @@ class BaseConsumer(Client):
             )
 
         results = yield self.send(requests)
+#        log.debug(results)
         raise gen.Return([
             msg for messageset in results.values() for msg in messageset
-            if messageset
+            if msg # Skip empty messages
+            # BUG: troubleshoot why there are None values
         ])
 
     def handle_fetch_response(self, response):
@@ -195,6 +197,9 @@ class BaseConsumer(Client):
                 continue
 
             messages.append(value)
-            self.offsets[topic_name][partition.partition_id] = offset + 1
+#            log.debug("offset %d => ", self.offsets[topic_name][partition.partition_id])
+            if offset>=0: # FIX: offset may have special value (e.g., def. END(-1))
+                self.offsets[topic_name][partition.partition_id] = offset + 1
+#            log.debug("%d", self.offsets[topic_name][partition.partition_id])
 
         return messages

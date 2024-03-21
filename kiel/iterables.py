@@ -1,3 +1,5 @@
+from __future__ import generator_stop
+
 def drain(iterable):
     """
     Helper method that empties an iterable as it is iterated over.
@@ -23,4 +25,5 @@ def drain(iterable):
         try:
             yield next_item(iterable)
         except (IndexError, KeyError):
-            raise StopIteration
+            return
+        # merge from fork https://github.com/denissmirnov/kiel/commit/fa80aa1ccd790c0fbbd8cc46a72162195e1aed69

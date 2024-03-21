@@ -47,7 +47,8 @@ To install manually, first clone this here repo and:
 .. parsed-literal::
 
     cd kiel
-    python setup.py install
+    # optionally update version in __init__.py
+    pip install .
 
 
 Documentation

@@ -32,6 +32,7 @@ class SingleConsumer(BaseConsumer):
     BEGINNING = -2
     #: special offset api value for 'very latest offset'
     END = -1
+    #: For api ref. see https://github.com/kafka-dev/kafka/blob/master/core/src/main/scala/kafka/api/OffsetRequest.scala
 
     @property
     def allocation(self):
@@ -104,7 +105,10 @@ class SingleConsumer(BaseConsumer):
             code = partition.error_code
             if code == errors.no_error:
                 offset = partition.offsets[0]
-                self.offsets[topic][partition.partition_id] = offset
+#                log.debug("offset %d ==> ", self.offsets[topic][partition.partition_id])
+                if offset>=0:
+                    self.offsets[topic][partition.partition_id] = offset
+#                log.debug("%d", self.offsets[topic][partition.partition_id])
             elif code in errors.retriable:
                 self.heal_cluster = True
                 self.synced_offsets.discard(topic)
